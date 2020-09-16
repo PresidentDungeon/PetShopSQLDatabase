@@ -46,6 +46,19 @@ namespace PetShop.Core.ApplicationService.Impl
             return PetTypeRepository.ReadTypes().ToList();
         }
 
+        public List<PetType> GetPetTypesFilterSearch(Filter filter)
+        {
+            IEnumerable<PetType> types = PetTypeRepository.ReadTypesFilterSearch(filter);
+
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                return SearchEngine.Search<PetType>(types.ToList(), filter.Name);
+
+            }
+
+            return types.ToList();
+        }
+
         public PetType GetPetTypeByID(int ID)
         {
             return PetTypeRepository.GetPetTypeByID(ID);
@@ -54,27 +67,6 @@ namespace PetShop.Core.ApplicationService.Impl
         public List<PetType> GetPetTypeByName(string searchTitle)
         {
             return SearchEngine.Search<PetType>(GetAllPetTypes(), searchTitle);
-        }
-
-        public List<PetType> GetPetTypesFilterSearch(Filter filter)
-        {
-            IEnumerable<PetType> types = PetTypeRepository.ReadTypes();
-
-            if (!string.IsNullOrEmpty(filter.Name))
-            {
-                types = SearchEngine.Search<PetType>(types.ToList(), filter.Name);
-
-            }
-            if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
-            {
-                types = from x in types orderby x.Name select x;
-            }
-            else if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("desc"))
-            {
-                types = from x in types orderby x.Name descending select x;
-            }
-
-            return types.ToList();
         }
 
         public PetType UpdatePetType(PetType type, int ID)

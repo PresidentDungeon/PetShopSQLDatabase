@@ -27,6 +27,22 @@ namespace PetShop.Infrastructure.SQLLite.Data
             return ctx.PetTypes.AsEnumerable();
         }
 
+        public IEnumerable<PetType> ReadTypesFilterSearch(Filter filter)
+        {
+            IEnumerable<PetType> types = ctx.PetTypes.AsEnumerable();
+
+            if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
+            {
+                types = from x in types orderby x.Name select x;
+            }
+            else if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("desc"))
+            {
+                types = from x in types orderby x.Name descending select x;
+            }
+
+            return types;
+        }
+
         public PetType GetPetTypeByID(int ID)
         {
             return ctx.PetTypes.FirstOrDefault(x => x.ID == ID);

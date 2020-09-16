@@ -71,65 +71,26 @@ namespace PetShop.Core.ApplicationService.Impl
             return PetRepository.ReadPets().ToList();
         }
 
+        public List<Pet> GetPetsFilterSearch(Filter filter)
+        {
+            IEnumerable<Pet> pets = PetRepository.ReadPetsFilterSearch(filter);
+
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                return SearchEngine.Search<Pet>(pets.ToList(), filter.Name);
+            }
+
+            return pets.ToList();
+        }
+
         public List<Pet> GetAllPetsIncludeOwner()
         {
             return PetRepository.ReadPetsIncludeOwners().ToList();
         }
 
-        public List<Pet> GetAllPetsByPrice()
-        {
-            return PetRepository.ReadPets().OrderBy((x) => { return x.Price; }).ToList();
-        }
-
-        public List<Pet> GetAllAvailablePetsByPrice()
-        {
-            return (from x in GetAllPets() where x.Owner == null orderby x.Price select x).ToList();
-        }
-
         public Pet GetPetByID(int ID)
         {
             return PetRepository.GetPetByID(ID);
-        }
-
-        public List<Pet> GetPetByType(PetType type)
-        {
-            return (from x in GetAllPets() where x.Type.ID.Equals(type.ID) select x).ToList();
-        }
-
-        public List<Pet> GetPetByName(string searchTitle)
-        {
-            return SearchEngine.Search<Pet>(GetAllPets(), searchTitle);
-;       }
-
-        public List<Pet> GetPetByBirthdate(DateTime date)
-        {
-            return (from x in GetAllPets() where x.Birthdate.Equals(date) select x).ToList();
-        }
-
-        public List<Pet> GetPetsFilterSearch(Filter filter)
-        {
-            IEnumerable<Pet> pets = PetRepository.ReadPets();
-            
-            if (!string.IsNullOrEmpty(filter.Name))
-            {
-                pets = SearchEngine.Search<Pet>(pets.ToList(), filter.Name);
-
-            }
-            if (!string.IsNullOrEmpty(filter.PetType))
-            {
-                pets = from x in pets where x.Type.Name.ToLower().Equals(filter.PetType.ToLower()) select x;
-
-            }
-            if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc")) 
-            {
-                pets = from x in pets where x.Owner == null orderby x.Price select x;
-            }
-            else if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("desc"))
-            {
-                pets = from x in pets where x.Owner == null orderby x.Price descending select x;
-            }
-
-            return pets.ToList();
         }
 
         public Pet UpdatePet(Pet pet, int ID)

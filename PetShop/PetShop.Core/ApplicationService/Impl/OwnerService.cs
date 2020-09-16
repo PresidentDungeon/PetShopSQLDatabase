@@ -60,6 +60,18 @@ namespace PetShop.Core.ApplicationService.Impl
             return OwnerRepository.ReadOwners().ToList();
         }
 
+        public List<Owner> GetOwnersFilterSearch(Filter filter)
+        {
+            IEnumerable<Owner> owners = OwnerRepository.ReadOwnersFilterSearch(filter);
+
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                return SearchEngine.Search<Owner>(owners.ToList(), filter.Name);
+            }
+
+            return owners.ToList();
+        }
+
         public Owner GetOwnerByID(int ID)
         {
             return OwnerRepository.GetOwnerByID(ID);
@@ -73,27 +85,6 @@ namespace PetShop.Core.ApplicationService.Impl
         public List<Owner> GetOwnerByName(string searchTitle)
         {
             return SearchEngine.Search<Owner>(GetAllOwners(), searchTitle);
-        }
-
-        public List<Owner> GetOwnersFilterSearch(Filter filter)
-        {
-            IEnumerable<Owner> owners = OwnerRepository.ReadOwners();
-
-            if (!string.IsNullOrEmpty(filter.Name))
-            {
-                owners = SearchEngine.Search<Owner>(owners.ToList(), filter.Name);
-
-            }
-            if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
-            {
-                owners = from x in owners orderby x.FirstName+x.LastName select x;
-            }
-            else if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("desc"))
-            {
-                owners = from x in owners orderby x.FirstName + x.LastName descending select x;
-            }
-
-            return owners.ToList();
         }
 
         public Owner UpdateOwner(Owner owner, int ID)

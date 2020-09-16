@@ -63,15 +63,6 @@ namespace PetShop.RestAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            using(var scope = app.ApplicationServices.CreateScope())
-            {
-                var ctx = scope.ServiceProvider.GetService<PetShopContext>();
-                ctx.Database.EnsureDeleted();
-                ctx.Database.EnsureCreated();
-
-                InitStaticData dataInitilizer = scope.ServiceProvider.GetRequiredService<InitStaticData>();
-                dataInitilizer.InitData();
-            }
 
             app.UseSwagger();
 
@@ -83,6 +74,15 @@ namespace PetShop.RestAPI
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                using (var scope = app.ApplicationServices.CreateScope())
+                {
+                    var ctx = scope.ServiceProvider.GetService<PetShopContext>();
+                    ctx.Database.EnsureDeleted();
+                    ctx.Database.EnsureCreated();
+
+                    InitStaticData dataInitilizer = scope.ServiceProvider.GetRequiredService<InitStaticData>();
+                    dataInitilizer.InitData();
+                }
             }
 
             //app.UseHttpsRedirection();
