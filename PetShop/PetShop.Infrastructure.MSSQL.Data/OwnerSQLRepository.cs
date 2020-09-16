@@ -1,4 +1,6 @@
-﻿using PetShop.Core.DomainService;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
+using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -32,6 +34,11 @@ namespace PetShop.Infrastructure.SQLLite.Data
         public Owner GetOwnerByID(int ID)
         {
             return ctx.Owners.FirstOrDefault(x => x.ID == ID);
+        }
+
+        public Owner GetOwnerByIDIncludePets(int ID)
+        {
+            return ctx.Owners.Include(owner => owner.Pets).FirstOrDefault(x => x.ID == ID);
         }
 
         public Owner UpdateOwner(Owner owner)
