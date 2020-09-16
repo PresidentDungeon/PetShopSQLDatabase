@@ -57,6 +57,10 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public PetType DeletePetType(int ID)
         {
+            var petsToUnregister = ctx.Pets.Where(pet => pet.Type.ID == ID).ToList();
+            petsToUnregister.ForEach(pet => pet.Type = null);
+            ctx.Pets.UpdateRange(petsToUnregister);
+
             var deletedPet = ctx.PetTypes.Remove(GetPetTypeByID(ID));
             ctx.SaveChanges();
             return deletedPet.Entity;
