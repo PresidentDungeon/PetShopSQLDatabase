@@ -38,7 +38,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Owner GetOwnerByIDIncludePets(int ID)
         {
-            return ctx.Owners.Include(owner => owner.Pets).FirstOrDefault(x => x.ID == ID);
+            return ctx.Owners.Include(owner => owner.Pets).ThenInclude(pet => pet.Type).FirstOrDefault(x => x.ID == ID);
         }
 
         public Owner UpdateOwner(Owner owner)

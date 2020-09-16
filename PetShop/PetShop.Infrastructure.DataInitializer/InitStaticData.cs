@@ -37,13 +37,33 @@ namespace PetShop.Infrastructure.Data
             PetTypeRepository.AddPetType(turtle);
             PetTypeRepository.AddPetType(goat);
 
+            OwnerRepository.AddOwner(new Owner
+            {
+                FirstName = "Mathias",
+                LastName = "Thomsen",
+                Address = "Tulipanvej 33",
+                PhoneNumber = "42411722",
+                Email = "MathiasThomsen@gmail.com"
+            });
+
+            Owner Josefine = OwnerRepository.AddOwner(new Owner
+            {
+                FirstName = "Josefine",
+                LastName = "Thulstrup",
+                Address = "Kastanievej 17",
+                PhoneNumber = "23221119",
+                Email = "SejeJozze@hotmail.com"
+            });
+
             PetRepository.AddPet(new Pet
             {
                 Name = "Hr. Dingles",
                 Type = cat,
                 Birthdate = DateTime.Parse("29-03-2012", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
                 Color = "White with black stripes",
-                Price = 750.0
+                Price = 750.0,
+                Owner = Josefine,
+                SoldDate = DateTime.Parse("30-03-2012", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
             });
             PetRepository.AddPet(new Pet
             {
@@ -60,23 +80,6 @@ namespace PetShop.Infrastructure.Data
                 Birthdate = DateTime.Parse("05-08-2019", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
                 Color = "Brown with orange dots",
                 Price = 650.0
-            });
-
-            OwnerRepository.AddOwner(new Owner
-            {
-                FirstName = "Mathias",
-                LastName = "Thomsen",
-                Address = "Tulipanvej 33",
-                PhoneNumber = "42411722",
-                Email = "MathiasThomsen@gmail.com"
-            });
-            OwnerRepository.AddOwner(new Owner
-            {
-                FirstName = "Josefine",
-                LastName = "Thulstrup",
-                Address = "Kastanievej 17",
-                PhoneNumber = "23221119",
-                Email = "SejeJozze@hotmail.com"
             });
         }
     }

@@ -70,41 +70,6 @@ namespace PetShop.Core.ApplicationService.Impl
             return OwnerRepository.GetOwnerByIDIncludePets(ID);
         }
 
-        public Owner GetOwnerByIDWithPets(int ID)
-        {
-            Owner owner = GetAllOwners().Select(x => new Owner()
-            {
-                ID = x.ID,
-                FirstName = x.FirstName,
-                LastName = x.LastName,
-                PhoneNumber = x.PhoneNumber,
-                Address = x.Address,
-                Email = x.Email
-            }).Where((x) => { return x.ID == ID; }).FirstOrDefault();
-
-            if(owner != null)
-            {
-                List<Pet> pets = (from x in PetRepository.ReadPets() where x.Owner != null && x.Owner.ID == ID select x).ToList();
-                owner.Pets = new List<Pet>();
-
-                foreach (Pet pet in pets)
-                {
-                    owner.Pets.Add(new Pet
-                    {
-                        ID = pet.ID,
-                        Name = pet.Name,
-                        Type = pet.Type,
-                        Birthdate = pet.Birthdate,
-                        SoldDate = pet.SoldDate,
-                        Color = pet.Color,
-                        Price = pet.Price
-                    });
-                }
-                return owner;
-            }
-            return null;
-        }
-
         public List<Owner> GetOwnerByName(string searchTitle)
         {
             return SearchEngine.Search<Owner>(GetAllOwners(), searchTitle);

@@ -64,7 +64,7 @@ namespace PetShop.RestAPI.Controllers
         {
             try
             {
-                Owner owner = OwnerService.GetOwnerByIDWithPets(ID);
+                Owner owner = OwnerService.GetOwnerByIDIncludePets(ID);
                 if (owner != null)
                 {
                     return Ok(owner);
