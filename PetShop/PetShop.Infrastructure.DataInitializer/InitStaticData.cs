@@ -62,7 +62,6 @@ namespace PetShop.Infrastructure.Data
                 Birthdate = DateTime.Parse("29-03-2012", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
                 Color = "White with black stripes",
                 Price = 750.0,
-                Owner = Josefine,
                 SoldDate = DateTime.Parse("30-03-2012", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
             });
             PetRepository.AddPet(new Pet
@@ -71,6 +70,7 @@ namespace PetShop.Infrastructure.Data
                 Type = turtle,
                 Birthdate = DateTime.Parse("15-01-1982", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
                 Color = "Dark green",
+                Owner = Josefine,
                 Price = 365.25
             });
             PetRepository.AddPet(new Pet
