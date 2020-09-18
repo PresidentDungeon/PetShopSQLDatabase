@@ -13,11 +13,9 @@ namespace PetShop.Core.ApplicationService
 
         List<PetType> GetAllPetTypes();
 
-        PetType GetPetTypeByID(int ID);
-
-        List<PetType> GetPetTypeByName(string searchTitle);
-
         List<PetType> GetPetTypesFilterSearch(Filter filter);
+
+        PetType GetPetTypeByID(int ID);
 
         PetType UpdatePetType(PetType type, int ID);
 

@@ -53,7 +53,6 @@ namespace PetShop.Core.ApplicationService.Impl
             if (!string.IsNullOrEmpty(filter.Name))
             {
                 return SearchEngine.Search<PetType>(types.ToList(), filter.Name);
-
             }
 
             return types.ToList();
@@ -62,11 +61,6 @@ namespace PetShop.Core.ApplicationService.Impl
         public PetType GetPetTypeByID(int ID)
         {
             return PetTypeRepository.GetPetTypeByID(ID);
-        }
-
-        public List<PetType> GetPetTypeByName(string searchTitle)
-        {
-            return SearchEngine.Search<PetType>(GetAllPetTypes(), searchTitle);
         }
 
         public PetType UpdatePetType(PetType type, int ID)
