@@ -19,7 +19,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Pet AddPet(Pet pet)
         {
-            if(pet.Owner != null)
+            if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
             {
                 ctx.Attach(pet.Owner);
             }
@@ -61,11 +61,16 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Pet GetPetByID(int ID)
         {
-            return ctx.Pets.Include(pet => pet.Type).Include(pet => pet.Owner).FirstOrDefault(x => x.ID == ID);
+            return ctx.Pets.AsNoTracking().Include(pet => pet.Type).Include(pet => pet.Owner).FirstOrDefault(x => x.ID == ID);
         }
 
         public Pet UpdatePet(Pet pet)
-        {
+        {   
+            if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
+            {
+                ctx.Attach(pet.Owner);
+            }
+
             var updatedPet = ctx.Pets.Update(pet);
             ctx.SaveChanges();
             return updatedPet.Entity;
