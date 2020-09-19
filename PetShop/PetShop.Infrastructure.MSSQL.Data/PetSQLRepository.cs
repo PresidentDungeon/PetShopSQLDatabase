@@ -19,6 +19,11 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Pet AddPet(Pet pet)
         {
+            if(pet.Owner != null)
+            {
+                ctx.Attach(pet.Owner);
+            }
+
             var petCreated = ctx.Pets.Add(pet);
             ctx.SaveChanges();
             return petCreated.Entity;
