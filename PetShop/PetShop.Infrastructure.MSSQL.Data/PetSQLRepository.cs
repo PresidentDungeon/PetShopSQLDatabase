@@ -19,14 +19,20 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Pet AddPet(Pet pet)
         {
-            if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
-            {
-                ctx.Attach(pet.Owner);
-            }
+            /* if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
+             {
+                 ctx.Attach(pet.Owner);
+             }
 
-            var petCreated = ctx.Pets.Add(pet);
+             var petCreated = ctx.Pets.Add(pet);
+             ctx.SaveChanges();
+             return petCreated.Entity; */
+
+            ctx.Attach(pet).State = EntityState.Added;
             ctx.SaveChanges();
-            return petCreated.Entity;
+
+            return pet;
+
         }
 
         public IEnumerable<Pet> ReadPets()
@@ -65,15 +71,26 @@ namespace PetShop.Infrastructure.SQLLite.Data
         }
 
         public Pet UpdatePet(Pet pet)
-        {   
-            if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
-            {
-                ctx.Attach(pet.Owner);
-            }
+        {
+            /* if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
+             {
+                 ctx.Attach(pet.Owner);
+             }
+             else
+             {
+                 ctx.Entry(pet).Reference(pet => pet.Owner).IsModified = true;
+             }
 
-            var updatedPet = ctx.Pets.Update(pet);
+             var updatedPet = ctx.Pets.Update(pet);
+             ctx.SaveChanges();
+             return updatedPet.Entity;
+            */
+
+            ctx.Attach(pet).State = EntityState.Modified;
+            ctx.Entry(pet).Reference(pet => pet.Owner).IsModified = true;
+            ctx.Entry(pet).Reference(pet => pet.Type).IsModified = true;
             ctx.SaveChanges();
-            return updatedPet.Entity;
+            return pet;
         }
 
         public Pet DeletePet(int ID)
