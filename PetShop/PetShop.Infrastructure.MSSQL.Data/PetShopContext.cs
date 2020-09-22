@@ -15,6 +15,10 @@ namespace PetShop.Infrastructure.SQLLite.Data
             modelBuilder.Entity<Pet>()
                 .HasOne(p => p.Owner)
                 .WithMany(o => o.Pets).OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Pet>()
+                .HasOne(p => p.Type)
+                .WithMany(pt => pt.Pets).OnDelete(DeleteBehavior.SetNull);
         }
 
         public DbSet<Pet> Pets {get;set;}

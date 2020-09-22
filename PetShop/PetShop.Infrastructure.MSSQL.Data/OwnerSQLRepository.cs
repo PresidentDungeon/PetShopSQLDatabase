@@ -21,9 +21,9 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Owner AddOwner(Owner owner)
         {
-            var createdOwner = ctx.Owners.Add(owner);
+            ctx.Attach(owner).State = EntityState.Added;
             ctx.SaveChanges();
-            return createdOwner.Entity;
+            return owner;
         }
 
         public IEnumerable<Owner> ReadOwners()
@@ -49,7 +49,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Owner GetOwnerByID(int ID)
         {
-            return ctx.Owners.FirstOrDefault(x => x.ID == ID);
+            return ctx.Owners.AsNoTracking().FirstOrDefault(x => x.ID == ID);
         }
 
         public Owner GetOwnerByIDIncludePets(int ID)
@@ -59,9 +59,9 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Owner UpdateOwner(Owner owner)
         {
-            var updatedOwner = ctx.Update(owner);
+            ctx.Attach(owner).State = EntityState.Modified;
             ctx.SaveChanges();
-            return updatedOwner.Entity;
+            return owner;
         }
 
         public Owner DeleteOwner(int ID)

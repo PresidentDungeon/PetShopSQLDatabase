@@ -1,4 +1,5 @@
-﻿using PetShop.Core.DomainService;
+﻿using Microsoft.EntityFrameworkCore;
+using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,9 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public PetType AddPetType(PetType type)
         {
-            var petTypeCreated = ctx.PetTypes.Add(type);
+            ctx.Attach(type).State = EntityState.Added;
             ctx.SaveChanges();
-            return petTypeCreated.Entity;
+            return type;
         }
         public IEnumerable<PetType> ReadTypes()
         {
@@ -45,22 +46,18 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public PetType GetPetTypeByID(int ID)
         {
-            return ctx.PetTypes.FirstOrDefault(x => x.ID == ID);
+            return ctx.PetTypes.AsNoTracking().FirstOrDefault(x => x.ID == ID);
         }
 
         public PetType UpdatePetType(PetType type)
         {
-            var petToUpdate = ctx.PetTypes.Update(type);
+            ctx.Attach(type).State = EntityState.Modified;
             ctx.SaveChanges();
-            return petToUpdate.Entity;
+            return type;
         }
 
         public PetType DeletePetType(int ID)
         {
-            var petsToUnregister = ctx.Pets.Where(pet => pet.Type.ID == ID).ToList();
-            petsToUnregister.ForEach(pet => pet.Type = null);
-            ctx.Pets.UpdateRange(petsToUnregister);
-
             var deletedPet = ctx.PetTypes.Remove(GetPetTypeByID(ID));
             ctx.SaveChanges();
             return deletedPet.Entity;
