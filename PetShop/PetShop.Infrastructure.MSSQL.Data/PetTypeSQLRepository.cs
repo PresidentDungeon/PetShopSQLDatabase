@@ -30,7 +30,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public IEnumerable<PetType> ReadTypesFilterSearch(Filter filter)
         {
-            IEnumerable<PetType> types = ctx.PetTypes.AsEnumerable();
+            IQueryable<PetType> types = ctx.PetTypes.AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
             {

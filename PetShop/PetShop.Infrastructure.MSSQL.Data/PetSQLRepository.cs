@@ -4,6 +4,7 @@ using PetShop.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace PetShop.Infrastructure.SQLLite.Data
@@ -42,22 +43,27 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public IEnumerable<Pet> ReadPetsFilterSearch(Filter filter)
         {
-            IEnumerable<Pet> pets = ctx.Pets.Include(pet => pet.Type).AsEnumerable();
+
+            //IEnumerable<Pet> pets = ctx.Pets.Include(pet => pet.Type);
+            IQueryable<Pet> pets = ctx.Pets.Include(pet => pet.Type).AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.PetType))
             {
+               // ctx.Pets.Where(p => p.Type.Name.ToLower().Equals(filter.PetType.ToLower()));
                 pets = from x in pets where x.Type.Name.ToLower().Equals(filter.PetType.ToLower()) select x;
             }
             if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
             {
+                //ctx.Pets.Where(p => p.Owner == null).OrderBy(p => p.Price);
                 pets = from x in pets where x.Owner == null orderby x.Price select x;
             }
             else if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("desc"))
             {
+                //ctx.Pets.Where(p => p.Owner == null).OrderByDescending(p => p.Price);
                 pets = from x in pets where x.Owner == null orderby x.Price descending select x;
             }
 
-            return pets.AsEnumerable();
+            return pets;
         }
 
         public IEnumerable<Pet> ReadPetsIncludeOwners()

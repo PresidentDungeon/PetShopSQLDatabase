@@ -33,7 +33,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public IEnumerable<Owner> ReadOwnersFilterSearch(Filter filter)
         {
-            IEnumerable<Owner> owners = ctx.Owners.AsEnumerable();
+            IQueryable<Owner> owners = ctx.Owners.AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
             {

@@ -77,7 +77,12 @@ namespace PetShop.Core.ApplicationService.Impl
 
             if (!string.IsNullOrEmpty(filter.Name))
             {
-                return SearchEngine.Search<Pet>(pets.ToList(), filter.Name);
+                pets = SearchEngine.Search<Pet>(pets.ToList(), filter.Name);
+            }
+
+            if (filter.CurrentPage > 0 && filter.ItemsPrPage > 0)
+            {
+                pets = pets.Skip((filter.CurrentPage - 1) * filter.ItemsPrPage).Take(filter.ItemsPrPage);
             }
 
             return pets.ToList();
