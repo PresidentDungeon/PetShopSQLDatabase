@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.Entities;
@@ -42,7 +43,7 @@ namespace PetShop.RestAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<PetType>), 200)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<IEnumerable<PetType>> Get([FromQuery]Filter filter)
         {
             try
@@ -50,7 +51,11 @@ namespace PetShop.RestAPI.Controllers
                 IEnumerable<PetType> petTypeEnumerable = PetTypeService.GetPetTypesFilterSearch(filter);
                 return Ok(petTypeEnumerable);
             }
-            catch(Exception ex)
+            catch (InvalidDataException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(500, "Error loading pet types. Please try again...");
             }

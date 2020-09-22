@@ -3,6 +3,7 @@ using PetShop.Core.Entities;
 using PetShop.Core.Search;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace PetShop.Core.ApplicationService.Impl
@@ -48,6 +49,11 @@ namespace PetShop.Core.ApplicationService.Impl
 
         public List<PetType> GetPetTypesFilterSearch(Filter filter)
         {
+            if (filter.CurrentPage < 0 || filter.ItemsPrPage < 0)
+            {
+                throw new InvalidDataException("Page or items per page must be above zero");
+            }
+
             IEnumerable<PetType> types = PetTypeRepository.ReadTypesFilterSearch(filter);
 
             if (!string.IsNullOrEmpty(filter.Name))
@@ -58,6 +64,10 @@ namespace PetShop.Core.ApplicationService.Impl
             if (filter.CurrentPage > 0 && filter.ItemsPrPage > 0)
             {
                 types = types.Skip((filter.CurrentPage - 1) * filter.ItemsPrPage).Take(filter.ItemsPrPage);
+                if (types.Count() == 0)
+                {
+                    throw new InvalidDataException("Index out of bounds");
+                }
             }
 
             return types.ToList();

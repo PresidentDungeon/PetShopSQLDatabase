@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.Entities;
@@ -42,7 +43,7 @@ namespace PetShop.RestAPI.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Owner>), 200)]
-        [ProducesResponseType(500)]
+        [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<IEnumerable<Owner>> Get([FromQuery] Filter filter)
         {
             try
@@ -50,7 +51,10 @@ namespace PetShop.RestAPI.Controllers
                 IEnumerable<Owner> ownerEnumerable = OwnerService.GetOwnersFilterSearch(filter);
                 return Ok(ownerEnumerable);
             }
-            
+            catch (InvalidDataException ex)
+            {
+                return NotFound(ex.Message);
+            }
             catch (Exception ex)
             {
                 return StatusCode(500, "Error loading owners. Please try again...");
