@@ -12,12 +12,14 @@ namespace PetShop.Infrastructure.Data
         private IPetRepository PetRepository;
         private IOwnerRepository OwnerRepository;
         private IPetTypeRepository PetTypeRepository;
+        private IColorRepository ColorRepository;
 
-        public InitStaticData(IPetRepository petRepository, IOwnerRepository ownerRepository, IPetTypeRepository petTypeRepository)
+        public InitStaticData(IPetRepository petRepository, IOwnerRepository ownerRepository, IPetTypeRepository petTypeRepository, IColorRepository colorRepository)
         {
             this.PetRepository = petRepository;
             this.OwnerRepository = ownerRepository;
             this.PetTypeRepository = petTypeRepository;
+            this.ColorRepository = colorRepository;
         }
         public void InitData()
         {
@@ -36,6 +38,12 @@ namespace PetShop.Infrastructure.Data
             PetTypeRepository.AddPetType(tarantula);
             PetTypeRepository.AddPetType(turtle);
             PetTypeRepository.AddPetType(goat);
+
+            Color red = new Color { ColorDescription = "Red" };
+            Color blue = new Color { ColorDescription = "Blue" };
+
+            ColorRepository.AddColor(red);
+            ColorRepository.AddColor(blue);
 
             OwnerRepository.AddOwner(new Owner
             {
@@ -60,8 +68,9 @@ namespace PetShop.Infrastructure.Data
                 Name = "Hr. Dingles",
                 Type = cat,
                 Birthdate = DateTime.Parse("29-03-2012", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
-                Color = "White with black stripes",
+            //    Colors = new List<Color> { blue },
                 Price = 750.0,
+                petColors = new List<PetColor> { new PetColor { Color = blue }, new PetColor { Color = red } },
                 SoldDate = DateTime.Parse("30-03-2012", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
             });
             PetRepository.AddPet(new Pet
@@ -69,7 +78,7 @@ namespace PetShop.Infrastructure.Data
                 Name = "SlowPoke",
                 Type = turtle,
                 Birthdate = DateTime.Parse("15-01-1982", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
-                Color = "Dark green",
+           //     Colors = new List<Color> { blue },
                 Owner = Josefine,
                 Price = 365.25
             });
@@ -78,7 +87,7 @@ namespace PetShop.Infrastructure.Data
                 Name = "Leggy",
                 Type = tarantula,
                 Birthdate = DateTime.Parse("05-08-2019", CultureInfo.GetCultureInfo("da-DK").DateTimeFormat),
-                Color = "Brown with orange dots",
+          //      Colors = new List<Color> { red },
                 Price = 650.0
             });
         }

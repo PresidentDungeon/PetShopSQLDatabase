@@ -45,7 +45,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
         {
 
             //IEnumerable<Pet> pets = ctx.Pets.Include(pet => pet.Type);
-            IQueryable<Pet> pets = ctx.Pets.Include(pet => pet.Type).AsQueryable();
+            IQueryable<Pet> pets = ctx.Pets.Include(pet => pet.Type).Include(pet => pet.petColors).ThenInclude(p => p.Color).AsQueryable();
 
             if (!string.IsNullOrEmpty(filter.PetType))
             {
@@ -68,34 +68,36 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public IEnumerable<Pet> ReadPetsIncludeOwners()
         {
-            return ctx.Pets.Include(pet => pet.Type).Include(pet => pet.Owner).AsEnumerable();
+            return ctx.Pets.Include(pet => pet.Type).Include(pet => pet.Colors).Include(pet => pet.Owner).AsEnumerable();
         }
 
         public Pet GetPetByID(int ID)
         {
-            return ctx.Pets.AsNoTracking().Include(pet => pet.Type).Include(pet => pet.Owner).FirstOrDefault(x => x.ID == ID);
+            return ctx.Pets.AsNoTracking().Include(pet => pet.Type)
+                .Include(pet => pet.Colors)
+                .Include(pet => pet.Owner)
+                .FirstOrDefault(x => x.ID == ID);
         }
 
         public Pet UpdatePet(Pet pet)
         {
-            /* if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
-             {
-                 ctx.Attach(pet.Owner);
-             }
-             else
-             {
-                 ctx.Entry(pet).Reference(pet => pet.Owner).IsModified = true;
-             }
+            List<PetColor> petColors = ctx.PetColors.AsNoTracking().ToList();
 
-             var updatedPet = ctx.Pets.Update(pet);
-             ctx.SaveChanges();
-             return updatedPet.Entity;
-            */
+            //fjerne alle der ikke bruges
+            List<PetColor> color = petColors.Where(p => pet.petColors.All(p2 => p2.ColorID != p.ColorID) && p.PetID == pet.ID).ToList();
+            ctx.PetColors.RemoveRange(color);
+
+            //tilføje alle nye
+            List<PetColor> colorsToAdd = pet.petColors.Where(p => petColors.All(p2 => p2.ColorID != p.ColorID || p2.PetID != pet.ID)).ToList();
+            colorsToAdd.ForEach(x => x.PetID = pet.ID);
+            ctx.PetColors.AddRange(colorsToAdd);
+            ctx.SaveChanges();
 
             ctx.Attach(pet).State = EntityState.Modified;
             ctx.Entry(pet).Reference(pet => pet.Owner).IsModified = true;
             ctx.Entry(pet).Reference(pet => pet.Type).IsModified = true;
-            ctx.SaveChanges();
+
+            
             return pet;
         }
 

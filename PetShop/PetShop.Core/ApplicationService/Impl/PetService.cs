@@ -21,13 +21,13 @@ namespace PetShop.Core.ApplicationService.Impl
             this.SearchEngine = searchEngine;
         }
 
-        public Pet CreatePet(string petName, PetType type, DateTime birthDate, string color, double price)
+        public Pet CreatePet(string petName, PetType type, DateTime birthDate, List<PetColor> petColors, double price)
         {
             if (string.IsNullOrEmpty(petName))
             {
                 throw new ArgumentException("Entered pet name too short");
             }
-            if (string.IsNullOrEmpty(color))
+            if (petColors.Count == 0)
             {
                 throw new ArgumentException("Entered color description too short");
             }
@@ -55,7 +55,7 @@ namespace PetShop.Core.ApplicationService.Impl
                 throw new ArgumentException("Invalid birthdate selected");
             }
 
-            return new Pet { Name = petName, Type = type, Birthdate = birthDate, Color = color, Price = price };
+            return new Pet { Name = petName, Type = type, Birthdate = birthDate, petColors = petColors, Price = price };
         }
 
         public Pet AddPet(Pet pet)

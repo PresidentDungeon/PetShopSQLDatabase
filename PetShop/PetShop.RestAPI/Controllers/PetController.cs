@@ -4,6 +4,7 @@ using System.IO;
 using Microsoft.AspNetCore.Mvc;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.Entities;
+using PetShop.RestAPI.DTO;
 
 namespace PetShop.RestAPI.Controllers
 {
@@ -27,7 +28,7 @@ namespace PetShop.RestAPI.Controllers
         {
             try
             {
-                Pet petToAdd = PetService.CreatePet(pet.Name, pet.Type, pet.Birthdate, pet.Color, pet.Price);
+                Pet petToAdd = PetService.CreatePet(pet.Name, pet.Type, pet.Birthdate, pet.petColors, pet.Price);
                 petToAdd.SoldDate = pet.SoldDate;
                 Pet addedPet;
 
@@ -68,14 +69,22 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Pet>), 200)]
+        [ProducesResponseType(typeof(IEnumerable<PetDTO>), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
-        public ActionResult<IEnumerable<Pet>> Get([FromQuery]Filter filter)
+        public ActionResult<IEnumerable<PetDTO>> Get([FromQuery]Filter filter)
         {
             try
             {
                 IEnumerable<Pet> petEnumerable = PetService.GetPetsFilterSearch(filter);
-                return Ok(petEnumerable);
+                List<PetDTO> pets = new List<PetDTO>();
+
+                foreach (Pet pet in petEnumerable)
+                {
+                    pets.Add(new PetDTO(pet));
+                }
+
+
+                return Ok(pets);
             }
             catch (InvalidDataException ex)
             {
@@ -121,7 +130,7 @@ namespace PetShop.RestAPI.Controllers
                     return NotFound("No pet with such ID found");
                 }
 
-                Pet petToAUpdate = PetService.CreatePet(pet.Name, pet.Type, pet.Birthdate, pet.Color, pet.Price);
+                Pet petToAUpdate = PetService.CreatePet(pet.Name, pet.Type, pet.Birthdate, pet.petColors, pet.Price);
                 petToAUpdate.SoldDate = existingPet.SoldDate;
 
                 if (pet.Owner != null)
