@@ -81,11 +81,6 @@ namespace PetShop.Core.ApplicationService.Impl
 
             IEnumerable<Pet> pets = PetRepository.ReadPetsFilterSearch(filter);
 
-            if (!string.IsNullOrEmpty(filter.Name))
-            {
-                pets = SearchEngine.Search<Pet>(pets.ToList(), filter.Name);
-            }
-
             if (filter.CurrentPage > 0 && filter.ItemsPrPage > 0)
             {
                 pets = pets.Skip((filter.CurrentPage - 1) * filter.ItemsPrPage).Take(filter.ItemsPrPage);

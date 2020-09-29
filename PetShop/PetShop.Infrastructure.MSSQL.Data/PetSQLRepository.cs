@@ -4,8 +4,6 @@ using PetShop.Core.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 
 namespace PetShop.Infrastructure.SQLLite.Data
 {
@@ -20,20 +18,10 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Pet AddPet(Pet pet)
         {
-            /* if(pet.Owner != null && ctx.ChangeTracker.Entries<Owner>().FirstOrDefault(ce => ce.Entity.ID == pet.Owner.ID) == null)
-             {
-                 ctx.Attach(pet.Owner);
-             }
-
-             var petCreated = ctx.Pets.Add(pet);
-             ctx.SaveChanges();
-             return petCreated.Entity; */
-
             ctx.Attach(pet).State = EntityState.Added;
             ctx.SaveChanges();
 
             return pet;
-
         }
 
         public IEnumerable<Pet> ReadPets()
@@ -44,9 +32,12 @@ namespace PetShop.Infrastructure.SQLLite.Data
         public IEnumerable<Pet> ReadPetsFilterSearch(Filter filter)
         {
 
-            //IEnumerable<Pet> pets = ctx.Pets.Include(pet => pet.Type);
             IQueryable<Pet> pets = ctx.Pets.Include(pet => pet.Type).Include(pet => pet.petColors).ThenInclude(p => p.Color).AsQueryable();
 
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                pets = from x in pets where x.Name.Contains(filter.Name) select x;
+            }
             if (!string.IsNullOrEmpty(filter.PetType))
             {
                // ctx.Pets.Where(p => p.Type.Name.ToLower().Equals(filter.PetType.ToLower()));

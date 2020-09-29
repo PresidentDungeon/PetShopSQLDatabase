@@ -35,6 +35,10 @@ namespace PetShop.Infrastructure.SQLLite.Data
         {
             IQueryable<Owner> owners = ctx.Owners.AsQueryable();
 
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                owners = from x in owners where (x.FirstName + " " + x.LastName).Contains(filter.Name) select x;
+            }
             if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
             {
                 owners = from x in owners orderby x.FirstName + x.LastName select x;
@@ -66,10 +70,6 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Owner DeleteOwner(int ID)
         {
-            /*var petsToUnregister = ctx.Pets.Where(pet => pet.Owner.ID == ID).ToList();
-            petsToUnregister.ForEach(pet => pet.Owner = null);
-            ctx.Pets.UpdateRange(petsToUnregister);*/
-
             var deletedOwner = ctx.Owners.Remove(GetOwnerByID(ID));
             ctx.SaveChanges();
             return deletedOwner.Entity;

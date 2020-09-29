@@ -53,11 +53,6 @@ namespace PetShop.Core.ApplicationService.Impl
 
             IEnumerable<Color> colors = ColorRepository.ReadColorsFilterSearch(filter);
 
-            if (!string.IsNullOrEmpty(filter.Name))
-            {
-                colors = SearchEngine.Search<Color>(colors.ToList(), filter.Name);
-            }
-
             if (filter.CurrentPage > 0 && filter.ItemsPrPage > 0)
             {
                 colors = colors.Skip((filter.CurrentPage - 1) * filter.ItemsPrPage).Take(filter.ItemsPrPage);

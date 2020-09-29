@@ -32,6 +32,10 @@ namespace PetShop.Infrastructure.SQLLite.Data
         {
             IQueryable<PetType> types = ctx.PetTypes.AsQueryable();
 
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                types = from x in types where x.Name.Contains(filter.Name) select x;
+            }
             if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
             {
                 types = from x in types orderby x.Name select x;

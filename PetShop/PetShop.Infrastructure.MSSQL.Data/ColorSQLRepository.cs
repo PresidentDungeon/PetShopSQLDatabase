@@ -31,6 +31,10 @@ namespace PetShop.Infrastructure.SQLLite.Data
         {
             IQueryable<Color> colors = ctx.Colors.AsQueryable();
 
+            if (!string.IsNullOrEmpty(filter.Name))
+            {
+                colors = from x in colors where x.ColorDescription.Contains(filter.Name) select x;
+            }
             if (!string.IsNullOrEmpty(filter.Sorting) && filter.Sorting.ToLower().Equals("asc"))
             {
                 colors = from x in colors orderby x.ColorDescription select x;

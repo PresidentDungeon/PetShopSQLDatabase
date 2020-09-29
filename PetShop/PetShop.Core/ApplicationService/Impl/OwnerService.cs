@@ -70,11 +70,6 @@ namespace PetShop.Core.ApplicationService.Impl
 
             IEnumerable<Owner> owners = OwnerRepository.ReadOwnersFilterSearch(filter);
 
-            if (!string.IsNullOrEmpty(filter.Name))
-            {
-                owners = SearchEngine.Search<Owner>(owners.ToList(), filter.Name);
-            }
-
             if (filter.CurrentPage > 0 && filter.ItemsPrPage > 0)
             {
                 owners = owners.Skip((filter.CurrentPage - 1) * filter.ItemsPrPage).Take(filter.ItemsPrPage);

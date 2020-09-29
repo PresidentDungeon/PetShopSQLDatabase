@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
@@ -52,6 +53,10 @@ namespace PetShop.RestAPI
 
             services.AddDbContext<PetShopContext>(opt => { opt.UseSqlite("Data Source=PetShopApp.db"); });
 
+            services.AddCors(options => options.AddDefaultPolicy(
+                builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }
+                ));
+
             services.AddSwaggerGen((options) => {
                 options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
                 { 
@@ -86,6 +91,8 @@ namespace PetShop.RestAPI
                     dataInitilizer.InitData();
                 }
             }
+
+            app.UseCors();
 
             //app.UseHttpsRedirection();
 

@@ -56,11 +56,6 @@ namespace PetShop.Core.ApplicationService.Impl
 
             IEnumerable<PetType> types = PetTypeRepository.ReadTypesFilterSearch(filter);
 
-            if (!string.IsNullOrEmpty(filter.Name))
-            {
-                types = SearchEngine.Search<PetType>(types.ToList(), filter.Name);
-            }
-
             if (filter.CurrentPage > 0 && filter.ItemsPrPage > 0)
             {
                 types = types.Skip((filter.CurrentPage - 1) * filter.ItemsPrPage).Take(filter.ItemsPrPage);
