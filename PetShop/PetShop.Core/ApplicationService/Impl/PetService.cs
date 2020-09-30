@@ -12,13 +12,13 @@ namespace PetShop.Core.ApplicationService.Impl
     {
         private IPetRepository PetRepository;
         private IPetTypeRepository PetTypeRepository;
-        private ISearchEngine SearchEngine;
+        private IColorRepository ColorRepository;
 
-        public PetService(IPetRepository petRepository, IPetTypeRepository petTypeRepository, ISearchEngine searchEngine)
+        public PetService(IPetRepository petRepository, IPetTypeRepository petTypeRepository, IColorRepository colorRepository)
         {
             this.PetRepository = petRepository;
             this.PetTypeRepository = petTypeRepository;
-            this.SearchEngine = searchEngine;
+            this.ColorRepository = colorRepository;
         }
 
         public Pet CreatePet(string petName, PetType type, DateTime birthDate, List<PetColor> petColors, double price)
@@ -27,7 +27,7 @@ namespace PetShop.Core.ApplicationService.Impl
             {
                 throw new ArgumentException("Entered pet name too short");
             }
-            if (petColors.Count == 0)
+            if (petColors == null || petColors.Count == 0)
             {
                 throw new ArgumentException("Entered color description too short");
             }
@@ -54,6 +54,14 @@ namespace PetShop.Core.ApplicationService.Impl
             {
                 throw new ArgumentException("Invalid birthdate selected");
             }
+
+            foreach (PetColor color in petColors)
+            {
+                if(ColorRepository.GetColorByID(color.ColorID) == null){
+                    throw new ArgumentException("Invalid color");
+                }
+            }
+
 
             return new Pet { Name = petName, Type = type, Birthdate = birthDate, petColors = petColors, Price = price };
         }

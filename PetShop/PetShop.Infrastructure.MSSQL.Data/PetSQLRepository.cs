@@ -64,7 +64,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
 
         public Pet GetPetByID(int ID)
         {
-            return ctx.Pets.AsNoTracking().Include(pet => pet.Type)
+            return ctx.Pets.AsNoTracking().Include(pet => pet.Type).Include(pet => pet.petColors).ThenInclude(c => c.Color)
                 .Include(pet => pet.Colors)
                 .Include(pet => pet.Owner)
                 .FirstOrDefault(x => x.ID == ID);
@@ -82,11 +82,13 @@ namespace PetShop.Infrastructure.SQLLite.Data
             List<PetColor> colorsToAdd = pet.petColors.Where(p => petColors.All(p2 => p2.ColorID != p.ColorID || p2.PetID != pet.ID)).ToList();
             colorsToAdd.ForEach(x => x.PetID = pet.ID);
             ctx.PetColors.AddRange(colorsToAdd);
-            ctx.SaveChanges();
+            //ctx.SaveChanges();
 
             ctx.Attach(pet).State = EntityState.Modified;
             ctx.Entry(pet).Reference(pet => pet.Owner).IsModified = true;
             ctx.Entry(pet).Reference(pet => pet.Type).IsModified = true;
+
+            ctx.SaveChanges();
 
             
             return pet;
@@ -97,7 +99,6 @@ namespace PetShop.Infrastructure.SQLLite.Data
             var removedPet = ctx.Pets.Remove(GetPetByID(ID));
             ctx.SaveChanges();
             return removedPet.Entity;
-
         }
     }
 }

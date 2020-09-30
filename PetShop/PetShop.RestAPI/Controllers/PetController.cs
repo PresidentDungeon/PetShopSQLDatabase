@@ -53,6 +53,10 @@ namespace PetShop.RestAPI.Controllers
                     return BadRequest("No pet type selected");
                 }
 
+
+
+
+
                 addedPet = PetService.AddPet(petToAdd);
 
                 if (addedPet == null)
