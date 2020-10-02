@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.Entities;
@@ -73,6 +74,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = Policies.Admin)]
         [ProducesResponseType(typeof(IEnumerable<PetDTO>), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<IEnumerable<PetDTO>> Get([FromQuery]Filter filter)

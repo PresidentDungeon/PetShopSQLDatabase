@@ -1,4 +1,5 @@
-﻿using PetShop.Core.DomainService;
+﻿using PetShop.Core.ApplicationService;
+using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
 using System;
 using System.Collections.Generic;
@@ -13,13 +14,15 @@ namespace PetShop.Infrastructure.Data
         private IOwnerRepository OwnerRepository;
         private IPetTypeRepository PetTypeRepository;
         private IColorRepository ColorRepository;
+        private IUserService UserService;
 
-        public InitStaticData(IPetRepository petRepository, IOwnerRepository ownerRepository, IPetTypeRepository petTypeRepository, IColorRepository colorRepository)
+        public InitStaticData(IPetRepository petRepository, IOwnerRepository ownerRepository, IPetTypeRepository petTypeRepository, IColorRepository colorRepository, IUserService userService)
         {
             this.PetRepository = petRepository;
             this.OwnerRepository = ownerRepository;
             this.PetTypeRepository = petTypeRepository;
             this.ColorRepository = colorRepository;
+            this.UserService = userService;
         }
         public void InitData()
         {
@@ -90,6 +93,8 @@ namespace PetShop.Infrastructure.Data
           //      Colors = new List<Color> { red },
                 Price = 650.0
             });
+
+            UserService.AddUser(UserService.CreateUser("Hans", "kodeord", "Admin"));
         }
     }
 }

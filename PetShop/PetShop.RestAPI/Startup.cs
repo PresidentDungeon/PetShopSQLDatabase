@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
@@ -12,10 +14,12 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.ApplicationService.Impl;
 using PetShop.Core.DomainService;
+using PetShop.Core.Entities;
 using PetShop.Core.Search;
 using PetShop.Infrastructure.Data;
 using PetShop.Infrastructure.SQLLite.Data;
@@ -34,21 +38,23 @@ namespace PetShop.RestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IPetRepository, PetSQLRepository> ();
+            services.AddScoped<IPetRepository, PetSQLRepository>();
             services.AddScoped<IOwnerRepository, OwnerSQLRepository>();
             services.AddScoped<IPetTypeRepository, PetTypeSQLRepository>();
             services.AddScoped<IColorRepository, ColorSQLRepository>();
+            services.AddScoped<IUserRepository, UserSQLRepository>();
             services.AddScoped<IPetService, PetService>();
             services.AddScoped<IOwnerService, OwnerService>();
             services.AddScoped<IPetTypeService, PetTypeService>();
             services.AddScoped<IColorService, ColorService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPetExchangeService, PetExchangeService>();
             services.AddScoped<ISearchEngine, SearchEngine>();
             services.AddScoped<InitStaticData>();
 
-            services.AddControllers().AddNewtonsoftJson(options => 
+            services.AddControllers().AddNewtonsoftJson(options =>
             { options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
-              options.SerializerSettings.MaxDepth = 3; 
+                options.SerializerSettings.MaxDepth = 3;
             });
 
             services.AddDbContext<PetShopContext>(opt => { opt.UseSqlite("Data Source=PetShopApp.db"); }, ServiceLifetime.Transient);
@@ -58,13 +64,36 @@ namespace PetShop.RestAPI
                 ));
 
             services.AddSwaggerGen((options) => {
-                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 
-                { 
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
                     Title = "Pet Shop",
                     Description = "A RestAPI for pet a pet exchange application",
                     Version = "v1"
                 });
             });
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = Configuration["Jwt:Issuer"],
+                    ValidAudience = Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"])),
+                    ClockSkew = TimeSpan.FromMinutes(5)
+                };
+            });
+
+            services.AddAuthorization(config =>
+            {
+                config.AddPolicy(Policies.Admin, Policies.AdminPolicy());
+                config.AddPolicy(Policies.User, Policies.UserPolicy());
+            });
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -97,6 +126,8 @@ namespace PetShop.RestAPI
             //app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

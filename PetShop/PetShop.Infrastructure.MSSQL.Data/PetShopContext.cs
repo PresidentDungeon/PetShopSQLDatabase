@@ -38,5 +38,6 @@ namespace PetShop.Infrastructure.SQLLite.Data
         public DbSet<PetType> PetTypes { get; set; }
         public DbSet<Color> Colors { get; set; }
         public DbSet<PetColor> PetColors { get; set; }
+        public DbSet<User> Users { get; set; }
     }
 }
