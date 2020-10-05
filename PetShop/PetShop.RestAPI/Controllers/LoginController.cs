@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PetShop.Core.ApplicationService;
+using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
 
 namespace PetShop.RestAPI.Controllers
@@ -18,69 +19,40 @@ namespace PetShop.RestAPI.Controllers
     [Route("api/[controller]")]
     public class LoginController : ControllerBase
     {
-        private IConfiguration Config;
         private IUserService UserService;
+        private IAuthenticationHelper AuthenticationHelper;
 
-
-        public LoginController(IUserService userService, IConfiguration config)
+        public LoginController(IUserService userService, IAuthenticationHelper authenticationHelper)
         {
             UserService = userService;
-            Config = config;
+            AuthenticationHelper = authenticationHelper;
         }
 
         [HttpPost]
         public ActionResult Login([FromBody] User user)
         {
-            User foundUser = UserService.GetAllUsers().Where(u => u.UserName.Equals(user.UserName)).FirstOrDefault();
+            try
+            {
+                User foundUser = UserService.Login(user);
 
-            if (foundUser == null)
+                if (foundUser == null)
+                {
+                    return Unauthorized();
+                }
+
+                var tokenString = AuthenticationHelper.GenerateJWTToken(foundUser);
+
+                return Ok(new
+                {
+                    username = user.UserName,
+                    token = tokenString,
+                });
+            }
+            catch (UnauthorizedAccessException ex)
             {
                 return Unauthorized();
             }
-
-            string hashedPassword = UserService.GenerateHash(user.Password, foundUser.Salt);
-
-            if (!hashedPassword.Equals(foundUser.Password))
-            {
-                return Unauthorized();
-            }
-
-            var tokenString = GenerateJWTToken(foundUser);
-
-            return Ok(new
-            {
-                username = user.UserName,
-                token = tokenString,
-            });
+            
         }
-
-        string GenerateJWTToken(User user)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Config["Jwt:SecretKey"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, user.UserRole)
-            };
-
-            var token = new JwtSecurityToken(
-               new JwtHeader(credentials),
-               new JwtPayload(Config["Jwt:Issuer"], // issuer - not needed (ValidateIssuer = false)
-                              Config["Jwt:Audience"], // audience - not needed (ValidateAudience = false)
-                              claims.ToArray(),
-                              DateTime.Now,               // notBefore
-                              DateTime.Now.AddMinutes(5)));  // expires
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-
-
-
-        }
-
-
-
-
-
     }
 }

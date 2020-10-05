@@ -11,6 +11,8 @@ namespace PetShop.Core.ApplicationService
 
         string GenerateSalt();
 
+        User Login(User user);
+
         User CreateUser(string userName, string password, string userRole);
 
         User AddUser(User user);

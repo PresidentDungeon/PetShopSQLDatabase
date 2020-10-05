@@ -17,7 +17,6 @@ namespace PetShop.Core.ApplicationService.Impl
             this.UserRepository = userRepository;
         }
 
-
         public string GenerateHash(string password, string salt)
         {
             StringBuilder hash = new StringBuilder();
@@ -51,6 +50,30 @@ namespace PetShop.Core.ApplicationService.Impl
             }
 
             return hash.ToString();
+        }
+
+        public User Login(User user)
+        {
+            if (user.UserName == null || user.Password == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            User foundUser = GetAllUsers().Where(u => u.UserName.Equals(user.UserName)).FirstOrDefault();
+
+            if (foundUser == null)
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            string hashedPassword = GenerateHash(user.Password, foundUser.Salt);
+
+            if (!hashedPassword.Equals(foundUser.Password))
+            {
+                throw new UnauthorizedAccessException();
+            }
+
+            return foundUser;
         }
 
         public User CreateUser(string userName, string password, string userRole)

@@ -49,14 +49,10 @@ namespace PetShop.RestAPI.Controllers
                     petToAdd.Owner = owner;
                 }
 
-                if(pet.Type == null)
+                if (pet.Type == null)
                 {
                     return BadRequest("No pet type selected");
                 }
-
-
-
-
 
                 addedPet = PetService.AddPet(petToAdd);
 
@@ -74,7 +70,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = Policies.Admin)]
+        [Authorize(Roles = Policies.Admin)]
         [ProducesResponseType(typeof(IEnumerable<PetDTO>), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<IEnumerable<PetDTO>> Get([FromQuery]Filter filter)
@@ -103,6 +99,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet("{ID}")]
+        [Authorize(Roles = Policies.User)]
         [ProducesResponseType(typeof(Pet), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<Pet> GetByID(int ID)

@@ -22,6 +22,7 @@ using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
 using PetShop.Core.Search;
 using PetShop.Infrastructure.Data;
+using PetShop.Infrastructure.Security;
 using PetShop.Infrastructure.SQLLite.Data;
 
 namespace PetShop.RestAPI
@@ -38,6 +39,10 @@ namespace PetShop.RestAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Byte[] secretBytes = new byte[40];
+            Random rand = new Random();
+            rand.NextBytes(secretBytes);
+
             services.AddScoped<IPetRepository, PetSQLRepository>();
             services.AddScoped<IOwnerRepository, OwnerSQLRepository>();
             services.AddScoped<IPetTypeRepository, PetTypeSQLRepository>();
@@ -50,6 +55,7 @@ namespace PetShop.RestAPI
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPetExchangeService, PetExchangeService>();
             services.AddScoped<ISearchEngine, SearchEngine>();
+            services.AddSingleton<IAuthenticationHelper>(new AuthenticationHelper(secretBytes));
             services.AddScoped<InitStaticData>();
 
             services.AddControllers().AddNewtonsoftJson(options =>
@@ -77,22 +83,20 @@ namespace PetShop.RestAPI
                 options.SaveToken = true;
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = Configuration["Jwt:Issuer"],
-                    ValidAudience = Configuration["Jwt:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:SecretKey"])),
+                    IssuerSigningKey = new SymmetricSecurityKey(secretBytes),
                     ClockSkew = TimeSpan.FromMinutes(5)
                 };
             });
 
-            services.AddAuthorization(config =>
-            {
-                config.AddPolicy(Policies.Admin, Policies.AdminPolicy());
-                config.AddPolicy(Policies.User, Policies.UserPolicy());
-            });
+            //services.AddAuthorization(config =>
+            //{ 
+            //    config.AddPolicy(Policies.Admin, Policies.AdminPolicy());
+            //    config.AddPolicy(Policies.User, Policies.UserPolicy());
+            //});
 
         }
 
