@@ -24,8 +24,8 @@ namespace PetShop.Infrastructure.Security
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Role, user.UserRole)
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.UserRole),
             };
 
             var token = new JwtSecurityToken(

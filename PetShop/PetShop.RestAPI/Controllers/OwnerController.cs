@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.Entities;
@@ -19,6 +20,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpPost]
+        //[Authorize]
         [ProducesResponseType(typeof(Owner), 201)]
         [ProducesResponseType(400)][ProducesResponseType(500)]
         public ActionResult<Owner> CreateOwner([FromBody] Owner owner)
@@ -42,6 +44,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet]
+        //[Authorize]
         [ProducesResponseType(typeof(IEnumerable<Owner>), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<IEnumerable<Owner>> Get([FromQuery] Filter filter)
@@ -62,6 +65,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet("{ID}")]
+        //[Authorize]
         [ProducesResponseType(typeof(Owner), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<Owner> GetByID(int ID)
@@ -82,6 +86,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpPut("{ID}")]
+        //[Authorize]
         [ProducesResponseType(typeof(Owner), 202)]
         [ProducesResponseType(400)][ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<Owner> UpdateByID(int ID, [FromBody] Owner owner)
@@ -109,6 +114,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpDelete("{ID}")]
+        //[Authorize]
         [ProducesResponseType(typeof(Owner), 202)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<Owner> DeleteByID(int ID)

@@ -23,6 +23,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpPost]
+        //[Authorize]
         [ProducesResponseType(typeof(Pet), 201)]
         [ProducesResponseType(400)][ProducesResponseType(500)]
         public ActionResult<Pet> CreatePet([FromBody] Pet pet)
@@ -70,7 +71,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = Policies.Admin)]
+        //[Authorize]
         [ProducesResponseType(typeof(IEnumerable<PetDTO>), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<IEnumerable<PetDTO>> Get([FromQuery]Filter filter)
@@ -99,7 +100,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet("{ID}")]
-        [Authorize(Roles = Policies.User)]
+        //[Authorize]
         [ProducesResponseType(typeof(Pet), 200)]
         [ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<Pet> GetByID(int ID)
@@ -120,6 +121,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpPut("{ID}")]
+        //[Authorize]
         [ProducesResponseType(typeof(Pet), 202)]
         [ProducesResponseType(400)][ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<Pet> UpdateByID(int ID, [FromBody] Pet pet)
@@ -177,6 +179,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpDelete("{ID}")]
+        //[Authorize]
         [ProducesResponseType(typeof(Pet), 202)]
         [ProducesResponseType(400)][ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<Pet> DeleteByID(int ID)

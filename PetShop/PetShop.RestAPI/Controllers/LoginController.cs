@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.IO;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.AspNetCore.Mvc;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
+using System;
 
 namespace PetShop.RestAPI.Controllers
 {
@@ -44,15 +35,16 @@ namespace PetShop.RestAPI.Controllers
 
                 return Ok(new
                 {
-                    username = user.UserName,
-                    token = tokenString,
+                    ID = user.ID,
+                    Username = user.Username,
+                    Role = user.UserRole,
+                    Token = tokenString
                 });
             }
             catch (UnauthorizedAccessException ex)
             {
-                return Unauthorized();
+                return Unauthorized(ex.Message);
             }
-            
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PetShop.Core.ApplicationService;
 using PetShop.Core.Entities;
@@ -23,6 +24,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = Policies.Admin)]
         [ProducesResponseType(typeof(IEnumerable<Pet>), 200)]
         [ProducesResponseType(500)]
         public ActionResult<IEnumerable<Pet>> Get()
@@ -41,6 +43,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpGet("{ID}")]
+        [Authorize(Roles = Policies.Admin)]
         [ProducesResponseType(typeof(IEnumerable<Pet>), 200)]
         [ProducesResponseType(400)][ProducesResponseType(404)][ProducesResponseType(500)]
         public ActionResult<IEnumerable<Pet>> GetPetsByOwner(int ID)
@@ -66,10 +69,10 @@ namespace PetShop.RestAPI.Controllers
             {
                 return StatusCode(500, "Error loading pets registered to owner. Please try again...");
             }
-
         }
 
         [HttpPost("{petID},{ownerID}")]
+        [Authorize(Roles = Policies.Admin)]
         [ProducesResponseType(typeof(Pet), 202)]
         [ProducesResponseType(400)][ProducesResponseType(500)]
         public ActionResult<Pet> RegisterPet(int petID, int ownerID)
@@ -97,6 +100,7 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpPost("{petID}")]
+        [Authorize(Roles = Policies.Admin)]
         [ProducesResponseType(typeof(Pet), 202)]
         [ProducesResponseType(400)][ProducesResponseType(500)]
         public ActionResult<Pet> UnregisterPet(int petID)

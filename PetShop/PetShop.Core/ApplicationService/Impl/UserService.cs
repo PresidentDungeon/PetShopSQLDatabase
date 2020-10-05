@@ -54,23 +54,23 @@ namespace PetShop.Core.ApplicationService.Impl
 
         public User Login(User user)
         {
-            if (user.UserName == null || user.Password == null)
+            if (user.Username == null || user.Password == null)
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Username or Password is non-existing");
             }
 
-            User foundUser = GetAllUsers().Where(u => u.UserName.Equals(user.UserName)).FirstOrDefault();
+            User foundUser = GetAllUsers().Where(u => u.Username.Equals(user.Username)).FirstOrDefault();
 
             if (foundUser == null)
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("No user registered with such a name");
             }
 
             string hashedPassword = GenerateHash(user.Password, foundUser.Salt);
 
             if (!hashedPassword.Equals(foundUser.Password))
             {
-                throw new UnauthorizedAccessException();
+                throw new UnauthorizedAccessException("Entered password is incorrect");
             }
 
             return foundUser;
@@ -97,7 +97,7 @@ namespace PetShop.Core.ApplicationService.Impl
 
             return new User
             {
-                UserName = userName,
+                Username = userName,
                 Salt = generatedSalt,
                 Password = GenerateHash(password, generatedSalt),
                 UserRole = userRole

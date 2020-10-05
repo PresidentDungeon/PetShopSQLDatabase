@@ -95,7 +95,7 @@ namespace PetShop.Infrastructure.Data
             });
 
             UserService.AddUser(UserService.CreateUser("Hans", "kodeord", "Admin"));
-            UserService.AddUser(UserService.CreateUser("Bent", "Mhhhkay", "User"));
+            UserService.AddUser(UserService.CreateUser("Kurt", "lasagne28", "User"));
         }
     }
 }
