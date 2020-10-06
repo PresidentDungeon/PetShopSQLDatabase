@@ -151,7 +151,8 @@ namespace PetShop.RestAPI.Controllers
                     {
                         return NotFound("No owner with that ID found");
                     }
-                    petToAUpdate.Owner = owner;
+
+                    petToAUpdate.Owner = pet.Owner;
                 }
 
                 if (pet.Type.ID <= 0)
