@@ -2,6 +2,7 @@
 using PetShop.Core.ApplicationService;
 using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
+using PetShop.Core.Entities.Security;
 using System;
 
 namespace PetShop.RestAPI.Controllers
@@ -20,11 +21,11 @@ namespace PetShop.RestAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult Login([FromBody] User user)
+        public ActionResult Login([FromBody] LoginInputModel inputModel)
         {
             try
             {
-                User foundUser = UserService.Login(user);
+                User foundUser = UserService.Login(inputModel);
 
                 if (foundUser == null)
                 {
@@ -35,9 +36,9 @@ namespace PetShop.RestAPI.Controllers
 
                 return Ok(new
                 {
-                    ID = user.ID,
-                    Username = user.Username,
-                    Role = user.UserRole,
+                    ID = foundUser.ID,
+                    Username = foundUser.Username,
+                    Role = foundUser.UserRole,
                     Token = tokenString
                 });
             }

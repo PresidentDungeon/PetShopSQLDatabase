@@ -1,5 +1,6 @@
 ﻿using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
+using PetShop.Core.Entities.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,60 +18,45 @@ namespace PetShop.Core.ApplicationService.Impl
             this.UserRepository = userRepository;
         }
 
-        public string GenerateHash(string password, string salt)
+        public byte[] GenerateHash(string password, byte[] salt)
         {
-            StringBuilder hash = new StringBuilder();
-
-            String saltedPassword = salt + password;
-
-                HashAlgorithm sha = SHA256.Create();
-                byte[] hashedBytes = sha.ComputeHash(Encoding.ASCII.GetBytes(saltedPassword));
-
-                for (int idx = 0; idx < hashedBytes.Length; ++idx)
-                {
-                    byte b = hashedBytes[idx];
-                    hash.Append(((b & 0xf0) >> 4).ToString("X"));
-                    hash.Append((b & 0x0f).ToString("X")); 
-                }
-
-            return hash.ToString();
-        }
-
-        public string GenerateSalt()
-        {
-            StringBuilder hash = new StringBuilder();
-            Random r = new Random();
-            byte[] salt = new byte[6];
-            r.NextBytes(salt);
-
-            foreach (byte b in salt)
+            using (var hmac = new System.Security.Cryptography.HMACSHA512(salt))
             {
-                int value = (b & 0xf0) >> 4;
-                hash.Append(value.ToString("X"));
+                return hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
             }
-
-            return hash.ToString();
         }
 
-        public User Login(User user)
+        public byte[] GenerateSalt()
         {
-            if (user.Username == null || user.Password == null)
+            using (var hmac = new System.Security.Cryptography.HMACSHA512())
+            {
+                return hmac.Key;
+            }
+        }
+
+        public User Login(LoginInputModel inputModel)
+        {
+            if (inputModel.Username == null || inputModel.Password == null)
             {
                 throw new UnauthorizedAccessException("Username or Password is non-existing");
             }
 
-            User foundUser = GetAllUsers().Where(u => u.Username.Equals(user.Username)).FirstOrDefault();
+            User foundUser = GetAllUsers().Where(u => u.Username.Equals(inputModel.Username)).FirstOrDefault();
 
             if (foundUser == null)
             {
                 throw new UnauthorizedAccessException("No user registered with such a name");
             }
 
-            string hashedPassword = GenerateHash(user.Password, foundUser.Salt);
+            byte[] hashedPassword = GenerateHash(inputModel.Password, foundUser.Salt);
+            byte[] storedPassword = foundUser.Password;
 
-            if (!hashedPassword.Equals(foundUser.Password))
+            for (int i = 0; i < storedPassword.Length; i++)
             {
-                throw new UnauthorizedAccessException("Entered password is incorrect");
+                if (storedPassword[i] != hashedPassword[i])
+                {
+                    throw new UnauthorizedAccessException("Entered password is incorrect");
+                }
             }
 
             return foundUser;
@@ -93,7 +79,7 @@ namespace PetShop.Core.ApplicationService.Impl
                 throw new ArgumentException("Entered user role too short");
             }
 
-            string generatedSalt = GenerateSalt();
+            byte[] generatedSalt = GenerateSalt();
 
             return new User
             {

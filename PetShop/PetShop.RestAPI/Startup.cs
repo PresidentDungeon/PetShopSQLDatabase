@@ -92,12 +92,6 @@ namespace PetShop.RestAPI
                 };
             });
 
-            //services.AddAuthorization(config =>
-            //{ 
-            //    config.AddPolicy(Policies.Admin, Policies.AdminPolicy());
-            //    config.AddPolicy(Policies.User, Policies.UserPolicy());
-            //});
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

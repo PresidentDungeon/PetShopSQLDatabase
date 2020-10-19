@@ -1,4 +1,5 @@
 ﻿using PetShop.Core.Entities;
+using PetShop.Core.Entities.Security;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,11 +8,11 @@ namespace PetShop.Core.ApplicationService
 {
     public interface IUserService
     {
-        string GenerateHash(string password, string salt);
+        byte[] GenerateHash(string password, byte[] salt);
 
-        string GenerateSalt();
+        byte[] GenerateSalt();
 
-        User Login(User user);
+        User Login(LoginInputModel inputModel);
 
         User CreateUser(string userName, string password, string userRole);
 
