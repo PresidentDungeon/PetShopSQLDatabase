@@ -12,26 +12,12 @@ namespace PetShop.Core.ApplicationService.Impl
     public class UserService: IUserService
     {
         IUserRepository UserRepository;
+        IAuthenticationHelper AuthenticationHelper;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, IAuthenticationHelper authenticationHelper)
         {
             this.UserRepository = userRepository;
-        }
-
-        public byte[] GenerateHash(string password, byte[] salt)
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512(salt))
-            {
-                return hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
-            }
-        }
-
-        public byte[] GenerateSalt()
-        {
-            using (var hmac = new System.Security.Cryptography.HMACSHA512())
-            {
-                return hmac.Key;
-            }
+            this.AuthenticationHelper = authenticationHelper;
         }
 
         public User Login(LoginInputModel inputModel)
@@ -48,16 +34,7 @@ namespace PetShop.Core.ApplicationService.Impl
                 throw new UnauthorizedAccessException("No user registered with such a name");
             }
 
-            byte[] hashedPassword = GenerateHash(inputModel.Password, foundUser.Salt);
-            byte[] storedPassword = foundUser.Password;
-
-            for (int i = 0; i < storedPassword.Length; i++)
-            {
-                if (storedPassword[i] != hashedPassword[i])
-                {
-                    throw new UnauthorizedAccessException("Entered password is incorrect");
-                }
-            }
+            AuthenticationHelper.ValidateLogin(foundUser, inputModel);
 
             return foundUser;
         }
@@ -79,13 +56,13 @@ namespace PetShop.Core.ApplicationService.Impl
                 throw new ArgumentException("Entered user role too short");
             }
 
-            byte[] generatedSalt = GenerateSalt();
+            byte[] generatedSalt = AuthenticationHelper.GenerateSalt();
 
             return new User
             {
                 Username = userName,
                 Salt = generatedSalt,
-                Password = GenerateHash(password, generatedSalt),
+                Password = AuthenticationHelper.GenerateHash(password, generatedSalt),
                 UserRole = userRole
             };
         }

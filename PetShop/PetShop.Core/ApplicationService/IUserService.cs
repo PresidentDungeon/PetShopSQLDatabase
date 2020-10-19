@@ -8,10 +8,6 @@ namespace PetShop.Core.ApplicationService
 {
     public interface IUserService
     {
-        byte[] GenerateHash(string password, byte[] salt);
-
-        byte[] GenerateSalt();
-
         User Login(LoginInputModel inputModel);
 
         User CreateUser(string userName, string password, string userRole);
