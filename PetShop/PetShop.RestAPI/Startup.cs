@@ -63,7 +63,10 @@ namespace PetShop.RestAPI
                 options.SerializerSettings.MaxDepth = 3;
             });
 
-            services.AddDbContext<PetShopContext>(opt => { opt.UseSqlite("Data Source=PetShopApp.db"); }, ServiceLifetime.Transient);
+            services.AddDbContext<PetShopContext>(opt => { 
+                opt.UseSqlite("Data Source=PetShopApp.db");
+                opt.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            }, ServiceLifetime.Transient);
 
             services.AddCors(options => options.AddDefaultPolicy(
                 builder => { builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader(); }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using PetShop.Core.DomainService;
 using PetShop.Core.Entities;
 using System;
@@ -84,6 +85,8 @@ namespace PetShop.Infrastructure.SQLLite.Data
             ctx.PetColors.AddRange(colorsToAdd);
             //ctx.SaveChanges();
 
+            pet.petColors = null;
+
             ctx.Attach(pet).State = EntityState.Modified;
             ctx.Entry(pet).Reference(pet => pet.Owner).IsModified = true;
             ctx.Entry(pet).Reference(pet => pet.Type).IsModified = true;
@@ -91,7 +94,7 @@ namespace PetShop.Infrastructure.SQLLite.Data
             ctx.SaveChanges();
 
             
-            return pet;
+            return GetPetByID(pet.ID);
         }
 
         public Pet DeletePet(int ID)
