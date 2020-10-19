@@ -1,5 +1,4 @@
-﻿
-namespace PetShop.Core.Search
+﻿namespace PetShop.Core.Search
 {
     public interface ISearchAble
     {

@@ -1,9 +1,6 @@
 ﻿using PetShop.Core.Entities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Authentication.ExtendedProtection;
-using System.Threading.Tasks;
 
 namespace PetShop.RestAPI.DTO
 {
